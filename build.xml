@@ -29,7 +29,7 @@
 
 
   <!-- ====================================================================== -->
-  <!-- Build environment properties                                           -->
+  <!--     ------    --      Build environment properties                                           -->
   <!-- ====================================================================== -->
    <property name="environment.type.default" value="dev"/>
   	<if>
