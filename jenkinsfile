@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    stages{
+        stage('Pull code'){
+            steps{
+            git 'https://ijazbro@bitbucket.org/ijazbro/addressbook-edureka.git'
+        }
+        }
+        stage('test'){
+            steps{
+                sh "mvn test"
+            }
+        }
+        stage('cobeture report'){
+            steps{
+                sh "mvn cobertura:cobertura -Dcobertura.report.format=xml"
+            }
+        }
+        stage('pmd analysis'){
+            steps{
+                sh "mvn pmd:pmd"
+            }
+        }
+        stage('check style'){
+            steps{
+                sh "mvn checkstyle:checkstyle"
+                recordIssues(tools: [checkStyle(reportEncoding: 'UTF-8')])
+            }
+        }
+        stage('build'){
+            steps{
+                sh "mvn package"
+            }
+        }
+        
+    }
+        post {
+        success {    
+        archiveArtifacts artifacts: '**/*.war', followSymlinks: false
+        junit 'target/surefire-reports/*.xml'
+        cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+        nexusArtifactUploader artifacts: [[artifactId: 'Edureka_pipeline-$BUILD_TIMESTAMP', classifier: '', file: 'target/addressbook.war', type: 'war']], credentialsId: 'nexus', groupId: 'pipe', nexusUrl: '13.232.248.87:8081/nexus', nexusVersion: 'nexus2', protocol: 'http', repository: 'edureka-pipeline', version: 'edureka_pipeline-$BUILD_ID'
+        deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: 'http://13.232.248.87:8080/')], contextPath: null, war: '**/*.war'   
+         }   
+        }
+         
+    }
+    
