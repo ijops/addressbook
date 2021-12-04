@@ -47,6 +47,8 @@ pipeline {
         }
            
     }
+    
+    
     stage('docker push') {
         steps {
              withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
@@ -54,7 +56,6 @@ pipeline {
      
 }
         
-    }
     
     }
         post {
@@ -68,6 +69,6 @@ pipeline {
         nexusArtifactUploader artifacts: [[artifactId: 'edureka-$BUILD_ID', classifier: '', file: 'target/addressbook.war', type: 'war']], credentialsId: 'nexus', groupId: 'QA', nexusUrl: 'dkas.azuredomain.tech:8081/nexus', nexusVersion: 'nexus2', protocol: 'http', repository: 'edureka', version: 'edureka-$BUILD_ID'
          }   
         }
-         
+       }  
     }
     
