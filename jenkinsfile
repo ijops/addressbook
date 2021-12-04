@@ -51,16 +51,14 @@ pipeline {
         steps {
              withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
               sh 'docker push ijazu/addressbook-$BUILD_ID:latest'
+              sh 'docker logout'
+			  sh 'docker system prune -a -f'
      }
         
     
     }
         post {
         always {
-            sh 'docker logout'
-			sh 'docker system prune -a -f'
-            
-        
         archiveArtifacts artifacts: '**/*.war', followSymlinks: false
         junit 'target/surefire-reports/*.xml'
         cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
