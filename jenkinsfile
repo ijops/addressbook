@@ -39,9 +39,9 @@ pipeline {
                 
                 sh "chmod a+x docker.sh"
                 sh "sh docker.sh"
-                sh 'docker build . -t ijazu/adressbook-$BUILD_ID'
+                sh 'docker build . -t ijazu/addressbook-$BUILD_ID'
             
-            sh "docker run -itd --name book -p 8082:8080 ijazu/adressbook-$BUILD_ID"
+            sh "docker run -itd --name book -p 8082:8080 ijazu/addressbook-$BUILD_ID"
         }
            
     }
