@@ -36,9 +36,7 @@ pipeline {
         }
         stage('docker build') {
             steps {
-                sh "sudo docker -v"
-                sh "sudo docker images"
-                sh "sudo docker ps -a"
+                
                 sh "chmod a+x docker.sh"
                 sh "sh docker.sh"
                 sh 'docker build . -t ijazu/adressbook-$BUILD_ID'
@@ -62,12 +60,14 @@ pipeline {
         always {
             sh 'docker logout'
 			sh 'docker system prune -a -f'
+            
         
         archiveArtifacts artifacts: '**/*.war', followSymlinks: false
         junit 'target/surefire-reports/*.xml'
         cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
         nexusArtifactUploader artifacts: [[artifactId: 'edureka-$BUILD_ID', classifier: '', file: 'target/addressbook.war', type: 'war']], credentialsId: 'nexus', groupId: 'QA', nexusUrl: 'dkas.azuredomain.tech:8081/nexus', nexusVersion: 'nexus2', protocol: 'http', repository: 'edureka', version: 'edureka-$BUILD_ID'
-         }   
+       sh 'set +e'
+       }   
         }
        }  
     }
