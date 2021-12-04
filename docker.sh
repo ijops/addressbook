@@ -2,6 +2,7 @@
 sudo docker -v
 sudo docker images
 sudo docker ps -a
+set +e
             
             
 containers=$(docker ps -a -q --filter="name=book")
