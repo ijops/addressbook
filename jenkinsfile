@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+    label 'dkas'
+    }
     stages{
         stage('Pull code'){
             steps{
@@ -32,6 +34,19 @@ pipeline {
                 sh "mvn package"
             }
         }
+        stage('docker build') {
+            steps {
+                sh "sudo docker -v"
+                sh "sudo docker images"
+                sh "sudo docker ps -a"
+                sh "chmod a+x docker.sh"
+                sh "sh docker.sh"
+                sh 'docker build . -t ijazu/adressbook-$BUILD_ID'
+            
+            sh "docker run -itd --name book -p 8082:8080 ijazu/adressbook-$BUILD_ID"
+        }
+           
+    }
         
     }
         post {
@@ -39,8 +54,7 @@ pipeline {
         archiveArtifacts artifacts: '**/*.war', followSymlinks: false
         junit 'target/surefire-reports/*.xml'
         cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-        nexusArtifactUploader artifacts: [[artifactId: 'Edureka_pipeline-$BUILD_TIMESTAMP', classifier: '', file: 'target/addressbook.war', type: 'war']], credentialsId: 'nexus', groupId: 'pipe', nexusUrl: '13.232.248.87:8081/nexus', nexusVersion: 'nexus2', protocol: 'http', repository: 'edureka-pipeline', version: 'edureka_pipeline-$BUILD_ID'
-        deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: 'http://13.232.248.87:8080/')], contextPath: null, war: '**/*.war'   
+        nexusArtifactUploader artifacts: [[artifactId: 'edureka-$BUILD_ID', classifier: '', file: 'target/address.war', type: 'war']], credentialsId: 'nexus', groupId: 'QA', nexusUrl: 'dkas.azuredomain.tech:8081/nexus', nexusVersion: 'nexus2', protocol: 'http', repository: 'edureka', version: 'edureka-$BUILD_ID'
          }   
         }
          
