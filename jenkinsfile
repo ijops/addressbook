@@ -50,7 +50,7 @@ pipeline {
     stage('docker push') {
         steps {
              withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
-              sh 'docker push ijazu/addressbook-$BUILD_ID:latest''
+              sh 'docker push ijazu/addressbook-$BUILD_ID:latest'
      
 }
         
