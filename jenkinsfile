@@ -21,6 +21,7 @@ pipeline {
         stage('pmd analysis'){
             steps{
                 sh "mvn pmd:pmd"
+                recordIssues(tools: [pmdParser(reportEncoding: 'Big5-HKSCS')])
             }
         }
         stage('check style'){
